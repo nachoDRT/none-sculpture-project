@@ -2,4 +2,5 @@ res/test_video.mp4
 flask_local_test/server_videos
 flask_local_test/client
 app/client_gcloud
-credentials
+app/credentials
+app/raspberry_pi
