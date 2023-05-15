@@ -1,4 +1,5 @@
 res/test_video.mp4
-test/server_videos
-client
+flask_local_test/server_videos
+flask_local_test/client
+app/client_gcloud
 credentials

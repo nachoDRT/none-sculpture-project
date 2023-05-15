@@ -16,10 +16,10 @@ def get_video(url):
 
 
 def save_downloaded_video(video):
-    if not os.path.exists("client"):
-        os.makedirs("client")
+    if not os.path.exists("flask_local_test/client"):
+        os.makedirs("flask_local_test/client")
 
-    with open("client/video.mp4", "wb") as f:
+    with open("flask_local_test/client/video.mp4", "wb") as f:
         f.write(video)
 
 
