@@ -3,4 +3,4 @@ flask_local_test/server_videos
 flask_local_test/client
 app/client_gcloud
 app/credentials
-app/raspberry_pi
+raspberry_pi

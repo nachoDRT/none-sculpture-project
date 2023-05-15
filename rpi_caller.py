@@ -4,10 +4,7 @@ import os
 
 
 def play_video():
-    print(os.path.join(os.getcwd(), "app", "raspberry_pi", "bacana.mp4"))
-    cap = cv2.VideoCapture(
-        os.path.join(os.getcwd(), "app", "raspberry_pi", "bacana.mp4")
-    )
+    cap = cv2.VideoCapture(os.path.join(os.getcwd(), "raspberry_pi", "bacana.mp4"))
 
     # Verify if the video is loaded
     if not cap.isOpened():
@@ -39,7 +36,6 @@ response = requests.get(api_url + video_name)
 if response.status_code == 200:
     video_content = response.json()["video_content"]
     play_video()
-
 
 else:
     print("\n Error downloading video:", response.text)

@@ -10,11 +10,10 @@ from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
-# Configurar la carpeta de archivos estáticos
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Configure Google Cloud Storage client
-credential_path = os.path.join(os.getcwd(), "credentials", "credentials.json")
+credential_path = os.path.join(os.getcwd(), "app", "credentials", "credentials.json")
 client = storage.Client.from_service_account_json(credential_path)
 bucket_name = "none-sculpture-project"
 
@@ -24,17 +23,17 @@ videos_folder = "bacana_videos/"
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
-    with open("static/index.html") as file:
+    index_path = os.path.join(os.getcwd(), "app", "static", "index.html")
+    print(index_path)
+    with open(index_path) as file:
         return file.read()
 
 
 @app.post("/upload-video/")
 async def upload_video(file: UploadFile = File(...)):
-    # Obtain file name and content
     filename = file.filename
     file_content = await file.read()
 
-    # Upload file to Google Cloud Storage
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(videos_folder + filename)
     blob.upload_from_string(file_content)
@@ -44,21 +43,19 @@ async def upload_video(file: UploadFile = File(...)):
 
 @app.get("/download-video/{video_name}")
 async def download_video(video_name: str):
-    # Obtener el objeto Blob del vídeo en Google Cloud Storage
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(videos_folder + video_name)
 
-    # Verificar si el vídeo existe
     if not blob.exists():
         return {"message": "El vídeo no existe"}
 
-    # Descargar el contenido del vídeo
-    # video_content = blob.download_as_text()
-    with open(os.path.join(os.getcwd(), "raspberry_pi", "bacana.mp4"), "wb") as file:
+    with open(
+        os.path.join(os.getcwd(), "app", "client_store", "bacana.mp4"), "wb"
+    ) as file:
         video_content = blob.download_to_file(file)
 
     return {"video_content": video_content}
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="localhost", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
