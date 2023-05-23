@@ -26,7 +26,7 @@ def play_video():
     cv2.destroyAllWindows()
 
 
-api_url = "http://localhost:8000/download-video/"
+api_url = "https://bacana-test-k6q6fewzaq-no.a.run.app/download-video/"
 
 video_name = "test_video.mp4"
 

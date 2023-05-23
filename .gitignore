@@ -4,3 +4,4 @@ flask_local_test/client
 app/client_gcloud
 app/credentials
 raspberry_pi
+*.pyc
