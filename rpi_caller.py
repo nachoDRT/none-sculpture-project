@@ -4,7 +4,7 @@ import os
 
 
 def play_video():
-    cap = cv2.VideoCapture(os.path.join(os.getcwd(), "raspberry_pi", "bacana.mp4"))
+    cap = cv2.VideoCapture(os.path.join(os.getcwd(), "raspberry_pi", "latest.mp4"))
 
     # Verify if the video is loaded
     if not cap.isOpened():

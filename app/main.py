@@ -31,7 +31,8 @@ async def read_index():
 
 @app.post("/upload-video/")
 async def upload_video(file: UploadFile = File(...)):
-    filename = file.filename
+    # filename = file.filename
+    filename = "latest.mp4"
     file_content = await file.read()
 
     bucket = client.get_bucket(bucket_name)
@@ -50,7 +51,7 @@ async def download_video(video_name: str):
         return {"message": "El vídeo no existe"}
 
     with open(
-        os.path.join(os.getcwd(), "app", "client_store", "bacana.mp4"), "wb"
+        os.path.join(os.getcwd(), "app", "client_store", "latest.mp4"), "wb"
     ) as file:
         video_content = blob.download_to_file(file)
 
