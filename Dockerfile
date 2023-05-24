@@ -8,6 +8,10 @@ RUN pip install -r requirements.txt
 
 COPY ./app ./app
 COPY ./app/static ./app/static
+COPY ./app/static/css ./app/static/css
+COPY ./app/static/documents ./app/static/documents
+COPY ./app/static/images ./app/static/images
+COPY ./app/static/js ./app/static/js
 COPY ./app/client_store ./app/client_store
 COPY ./app/credentials ./app/credentials
 

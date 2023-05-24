@@ -1,41 +1,52 @@
 import requests
 import cv2
 import os
+import tempfile
 
+# api_url = "https://bacana-test-k6q6fewzaq-no.a.run.app/download-video/"
+# api_url = "https://bacana-image-web-k6q6fewzaq-no.a.run.app/download-video/"
+api_url = "http://localhost:8080/download-video/"
+video_name = "latest.mp4"
+url = api_url + video_name
 
-def play_video():
-    cap = cv2.VideoCapture(os.path.join(os.getcwd(), "raspberry_pi", "latest.mp4"))
+save_here = os.path.join(os.getcwd(), "app", "client_store", video_name)
 
-    # Verify if the video is loaded
-    if not cap.isOpened():
-        print("Error trying to play video")
-        exit()
+response = requests.get(url)
 
-    while cap.isOpened():
-        ret, frame = cap.read()
+if response.status_code == 200:
+    video_content = response.content
 
-        if not ret:
-            break
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
+        temp_file.write(video_content)
 
-        cv2.imshow("Bacana", frame)
+    video_path = temp_file.name
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+    cap = cv2.VideoCapture(video_path)
+
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    break_flag = False
+    while True:
+        for frame_index in range(total_frames):
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+            ret, frame = cap.read()
+
+            if not ret:
+                break
+
+            cv2.imshow("Video Bacano", frame)
+
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break_flag = True
+                break
+
+        if break_flag != True:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        else:
             break
 
     cap.release()
     cv2.destroyAllWindows()
-
-
-api_url = "https://bacana-test-k6q6fewzaq-no.a.run.app/download-video/"
-
-video_name = "test_video.mp4"
-
-response = requests.get(api_url + video_name)
-
-
-if response.status_code == 200:
-    video_content = response.json()["video_content"]
-    play_video()
 
 else:
     print("\n Error downloading video:", response.text)

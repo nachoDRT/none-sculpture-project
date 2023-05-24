@@ -2,10 +2,11 @@ from fastapi import FastAPI, File, UploadFile
 from google.cloud import storage
 import uvicorn
 import os
+import io
 
 # Imports needed to have the HTML interface
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 
 
 app = FastAPI()
@@ -29,6 +30,23 @@ async def read_index():
         return file.read()
 
 
+# @app.get("/{file_path:path}", include_in_schema=False)
+# async def serve_static_file(file_path: str, request: Request):
+#     static_path = os.path.join("C:\\Users\\Nacho\\Desktop\\app_test\\static", file_path)
+
+#     # Verifica que el archivo exista y sea un archivo estático
+#     if os.path.isfile(static_path) and "static" in file_path:
+#         return FileResponse(
+#             static_path,
+#             media_type="text/css"
+#             if file_path.endswith(".css")
+#             else "application/javascript",
+#         )
+
+#     # Si el archivo no existe o no está en la carpeta static, devuelve 404
+#     raise HTTPException(status_code=404)
+
+
 @app.post("/upload-video/")
 async def upload_video(file: UploadFile = File(...)):
     # filename = file.filename
@@ -50,12 +68,16 @@ async def download_video(video_name: str):
     if not blob.exists():
         return {"message": "El vídeo no existe"}
 
-    with open(
-        os.path.join(os.getcwd(), "app", "client_store", "latest.mp4"), "wb"
-    ) as file:
-        video_content = blob.download_to_file(file)
+    video_buffer = io.BytesIO()
+    blob.download_to_file(video_buffer)
+    video_buffer.seek(0)
 
-    return {"video_content": video_content}
+    headers = {
+        "Content-Disposition": f"attachment; filename={video_name}",
+        "Content-Type": "video/mp4",
+    }
+
+    return StreamingResponse(video_buffer, headers=headers)
 
 
 if __name__ == "__main__":
