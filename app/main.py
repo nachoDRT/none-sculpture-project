@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from google.cloud import storage
 import uvicorn
 import os
@@ -6,7 +6,7 @@ import io
 
 # Imports needed to have the HTML interface
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, FileResponse
 
 
 app = FastAPI()
@@ -25,31 +25,26 @@ videos_folder = "bacana_videos/"
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
     index_path = os.path.join(os.getcwd(), "app", "static", "index.html")
-    print(index_path)
     with open(index_path) as file:
         return file.read()
 
 
-# @app.get("/{file_path:path}", include_in_schema=False)
-# async def serve_static_file(file_path: str, request: Request):
-#     static_path = os.path.join("C:\\Users\\Nacho\\Desktop\\app_test\\static", file_path)
+@app.get("{file_path:path}", include_in_schema=False)
+async def serve_static_file(file_path: str):
+    static_path = file_path
+    print("hola", static_path)
 
-#     # Verifica que el archivo exista y sea un archivo estático
-#     if os.path.isfile(static_path) and "static" in file_path:
-#         return FileResponse(
-#             static_path,
-#             media_type="text/css"
-#             if file_path.endswith(".css")
-#             else "application/javascript",
-#         )
+    if os.path.isfile(static_path) and "static" in file_path:
+        media_type = (
+            "text/css" if file_path.endswith(".css") else "application/javascript"
+        )
+        return FileResponse(static_path, media_type=media_type)
 
-#     # Si el archivo no existe o no está en la carpeta static, devuelve 404
-#     raise HTTPException(status_code=404)
+    raise HTTPException(status_code=404)
 
 
 @app.post("/upload-video/")
 async def upload_video(file: UploadFile = File(...)):
-    # filename = file.filename
     filename = "latest.mp4"
     file_content = await file.read()
 

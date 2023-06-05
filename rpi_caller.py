@@ -5,13 +5,14 @@ import tempfile
 
 # api_url = "https://bacana-test-k6q6fewzaq-no.a.run.app/download-video/"
 # api_url = "https://bacana-image-web-k6q6fewzaq-no.a.run.app/download-video/"
-api_url = "http://localhost:8080/download-video/"
+# api_url = "http://localhost:8080/download-video/"
+api_url = "https://bacana-30-05-b-k6q6fewzaq-no.a.run.app/download-video/"
 video_name = "latest.mp4"
 url = api_url + video_name
 
 save_here = os.path.join(os.getcwd(), "app", "client_store", video_name)
 
-response = requests.get(url)
+response = requests.get(api_url)
 
 if response.status_code == 200:
     video_content = response.content
